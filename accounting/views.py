@@ -7,18 +7,6 @@ from .serializers import BusinessSerializer, CourseSerializer, CourseTeacherSeri
     CourseEnrollmentSerializer, PaymentSerializer, TeacherSerializer, SalarySerializer, ExpenseSerializer, \
     AccountSerializer, UserSerializer
 
-from .serializers import  (BusinessUserWriteSerializer,
-    ParentWriteSerializer,
-    ChildWriteSerializer,
-    TeacherWriteSerializer,
-    CourseWriteSerializer,
-    CourseTeacherWriteSerializer,
-    CourseEnrollmentWriteSerializer,
-    CoursePaymentWriteSerializer,
-    SalaryWriteSerializer,
-    ExpenseWriteSerializer,
-    AccountWriteSerializer)
-
 from .permissions import IsBusinessAdmin,TeacherAccessPermission
 from rest_framework import permissions
 
@@ -31,158 +19,83 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
+class ModifiedByMixin:
+    def perform_create(self, serializer):
+        serializer.save(modified_by=self.request.user)
 
-class BusinessViewSet(viewsets.ModelViewSet):
+    def perform_update(self, serializer):
+        serializer.save(modified_by=self.request.user)
+
+
+class BusinessViewSet(ModifiedByMixin,viewsets.ModelViewSet):
     queryset = Business.objects.all()
     serializer_class = BusinessSerializer
 
 
-class BusinessUserViewSet(viewsets.ModelViewSet):
+class BusinessUserViewSet(ModifiedByMixin, viewsets.ModelViewSet):
     queryset = BusinessUser.objects.all()
     serializer_class = BusinessUserSerializer
 
-    def get_serializer_class(self):
-        if self.action in ['create', 'update', 'partial_update']:
-            return BusinessUserWriteSerializer
-        return BusinessUserSerializer
 
-    def perform_update(self, serializer):
-        serializer.save(modified_by=self.request.user)
-
-
-class ParentViewSet(viewsets.ModelViewSet):
+class ParentViewSet(ModifiedByMixin,viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticated,TeacherAccessPermission,IsBusinessAdmin)
     queryset = Parent.objects.all()
     serializer_class = ParentSerializer
     
-    def get_serializer_class(self):
-        if self.action in ['create', 'update', 'partial_update']:
-            return ParentWriteSerializer
-        return ParentSerializer
     
-    def perform_update(self, serializer):
-        serializer.save(modified_by=self.request.user)
-
-class ChildViewSet(viewsets.ModelViewSet):
+class ChildViewSet(ModifiedByMixin,viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticated,TeacherAccessPermission,IsBusinessAdmin)
     queryset = Child.objects.all()
     serializer_class = ChildSerializer
 
-    def get_serializer_class(self):
-        if self.action in ['create', 'update', 'partial_update']:
-            return ChildWriteSerializer
-        return ChildSerializer
     
-    def perform_update(self, serializer):
-        serializer.save(modified_by=self.request.user)
-
-class TeacherViewSet(viewsets.ModelViewSet):
+class TeacherViewSet(ModifiedByMixin,viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticated,TeacherAccessPermission)
     queryset = Teacher.objects.all()
     serializer_class = TeacherSerializer
 
-    def get_serializer_class(self):
-        if self.action in ['create', 'update', 'partial_update']:
-            return TeacherWriteSerializer
-        return TeacherSerializer
-
-    def perform_update(self, serializer):
-        serializer.save(modified_by=self.request.user)
-
-class CourseViewSet(viewsets.ModelViewSet):
+    
+class CourseViewSet(ModifiedByMixin,viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticated, IsBusinessAdmin,)
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
 
-    def get_serializer_class(self):
-        if self.action in ['create', 'update', 'partial_update']:
-            return CourseWriteSerializer
-        return CourseSerializer
-
-    def perform_update(self, serializer):
-        serializer.save(modified_by=self.request.user)
     
-    def perform_create(self,serializer):
-        serializer.save(modified_by=self.request.user)
-
-class CourseTeacherViewSet(viewsets.ModelViewSet):
+class CourseTeacherViewSet(ModifiedByMixin,viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticated, IsBusinessAdmin,)
     queryset = CourseTeacher.objects.all()
     serializer_class = CourseTeacherSerializer
 
-    def get_serializer_class(self):
-        if self.action in ['create', 'update', 'partial_update']:
-            return CourseTeacherWriteSerializer
-        return CourseTeacherSerializer
     
-    def perform_update(self, serializer):
-        serializer.save(modified_by=self.request.user)
-
-
-class CourseEnrollmentViewSet(viewsets.ModelViewSet):
+class CourseEnrollmentViewSet(ModifiedByMixin,viewsets.ModelViewSet):
     queryset = CourseEnrollment.objects.all()
     serializer_class = CourseEnrollmentSerializer
 
-    def get_serializer_class(self):
-        if self.action in ['create','update','partial_update']:
-            return CourseEnrollmentWriteSerializer
-        return CourseEnrollmentSerializer
     
-    def perform_update(self, serializer):
-        serializer.save(modified_by=self.request.user)
 
-
-class CoursePaymentViewSet(viewsets.ModelViewSet):
+class CoursePaymentViewSet(ModifiedByMixin,viewsets.ModelViewSet):
     queryset = CoursePayment.objects.all()
     serializer_class = PaymentSerializer
 
-    def get_serializer_class(self):
-        if self.action in ['create','update','partial_update']:
-            return CoursePaymentWriteSerializer
-        return CoursePaymentWriteSerializer
     
-    def perform_update(self, serializer):
-        serializer.save(modified_by=self.request.user)
 
-
-class SalaryViewSet(viewsets.ModelViewSet):
+class SalaryViewSet(ModifiedByMixin,viewsets.ModelViewSet):
     queryset = Salary.objects.all()
     serializer_class = SalarySerializer
 
-    def get_serializer_class(self):
-        if self.action in ['create','update','partial_update']:
-            return SalaryWriteSerializer
-        return SalarySerializer
     
-    def perform_update(self, serializer):
-        serializer.save(modified_by=self.request.user)
 
-
-class ExpenseViewSet(viewsets.ModelViewSet):
+class ExpenseViewSet(ModifiedByMixin,viewsets.ModelViewSet):
     queryset = Expense.objects.all()
     serializer_class = ExpenseSerializer
 
-    def get_serializer_class(self):
-        if self.action in ['create','update','partial_update']:
-            return ExpenseWriteSerializer
-        return ExpenseSerializer
     
-    def perform_update(self, serializer):
-        serializer.save(modified_by=self.request.user)
 
-
-class AccountViewSet(viewsets.ModelViewSet):
+class AccountViewSet(ModifiedByMixin,viewsets.ModelViewSet):
     queryset = Account.objects.all()
     serializer_class = AccountSerializer
 
-    def get_serializer_class(self):
-        if self.action in ['create','update','partial_update']:
-            return AccountWriteSerializer
-        return AccountSerializer
     
-    def perform_update(self, serializer):
-        serializer.save(modified_by=self.request.user)
-
 from rest_framework.generics import RetrieveAPIView
 class UserDetails(RetrieveAPIView):
     serializer_class = UserSerializer

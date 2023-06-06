@@ -10,74 +10,80 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id', 'username', 'email', 'first_name', 'last_name', 'is_staff', 'is_active']
 
+class BaseSerializer(serializers.ModelSerializer):
+    def get_fields(self):
+        fields = super().get_fields()
+        if self.context['request'].method in ('POST', 'PUT', 'PATCH'):
+            fields.pop('modified_by', None)
+        return fields
 
-class BusinessSerializer(serializers.ModelSerializer):
+class BusinessSerializer(BaseSerializer):
     class Meta:
         model = Business
         fields = '__all__'
 
 
-class BusinessUserSerializer(serializers.ModelSerializer):
+class BusinessUserSerializer(BaseSerializer):
     class Meta:
         model = BusinessUser
         fields = ['id', 'business', 'user', 'role']
 
 
-class ParentSerializer(serializers.ModelSerializer):
+class ParentSerializer(BaseSerializer):
     class Meta:
         model = Parent
         fields = '__all__'
 
 
-class ChildSerializer(serializers.ModelSerializer):
+class ChildSerializer(BaseSerializer):
     class Meta:
         model = Child
         fields = '__all__'
 
 
-class CourseSerializer(serializers.ModelSerializer):
+class CourseSerializer(BaseSerializer):
     class Meta:
         model = Course
         fields = '__all__'
 
 
-class CourseTeacherSerializer(serializers.ModelSerializer):
+class CourseTeacherSerializer(BaseSerializer):
     class Meta:
         model = CourseTeacher
         fields = '__all__'
 
 
-class CourseEnrollmentSerializer(serializers.ModelSerializer):
+class CourseEnrollmentSerializer(BaseSerializer):
     class Meta:
         model = CourseEnrollment
         fields = '__all__'
 
 
-class PaymentSerializer(serializers.ModelSerializer):
+class PaymentSerializer(BaseSerializer):
     class Meta:
         model = CoursePayment
         fields = '__all__'
 
 
-class TeacherSerializer(serializers.ModelSerializer):
+class TeacherSerializer(BaseSerializer):
     class Meta:
         model = Teacher
         fields = '__all__'
 
 
-class SalarySerializer(serializers.ModelSerializer):
+class SalarySerializer(BaseSerializer):
     class Meta:
         model = Salary
         fields = '__all__'
 
 
-class ExpenseSerializer(serializers.ModelSerializer):
+class ExpenseSerializer(BaseSerializer):
     class Meta:
         model = Expense
         fields = '__all__'
 
 
-class AccountSerializer(serializers.ModelSerializer):
+class AccountSerializer(BaseSerializer):
     class Meta:
         model = Account
         fields = '__all__'
@@ -88,68 +94,3 @@ class CustomTokenSerializer(serializers.Serializer):
     user_id = serializers.IntegerField(source='user.id')
 
 
-
-class BusinessUserWriteSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = BusinessUser
-        exclude = ['modified_by']
-
-
-class ParentWriteSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Parent
-        exclude = ['modified_by']
-
-
-class ChildWriteSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Child
-        exclude = ['modified_by']
-
-
-class TeacherWriteSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Teacher
-        exclude = ['modified_by']
-
-
-class CourseWriteSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Course
-        exclude = ['modified_by']
-
-
-class CourseTeacherWriteSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CourseTeacher
-        exclude = ['modified_by']
-
-
-class CourseEnrollmentWriteSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CourseEnrollment
-        exclude = ['modified_by']
-
-
-class CoursePaymentWriteSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CoursePayment
-        exclude = ['modified_by']
-
-
-class SalaryWriteSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Salary
-        exclude = ['modified_by']
-
-
-class ExpenseWriteSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Expense
-        exclude = ['modified_by']
-
-
-class AccountWriteSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Account
-        exclude = ['modified_by']
